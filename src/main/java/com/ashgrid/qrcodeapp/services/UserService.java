@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -29,18 +31,16 @@ public class UserService implements UserDetailsService {
     PasswordEncoder passwordEncoder;
 
 
-
-
-
-
     public void signup(SignupRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Email is already in use");
         }
         User user = new User();
+        user.setPhoneId(request.getPhoneId());
         user.setFullName(request.getName());
         user.setEmail(request.getEmail());
         user.setRole(User.Role.SUPER_ADMIN);
+        user.setAttendances(Collections.emptyList());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
     }
@@ -52,6 +52,10 @@ public class UserService implements UserDetailsService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid password");
         }
+
+       if(!user.getPhoneId().equals(request.getPhoneId())){
+           throw new BadCredentialsException("phone not registered");
+       }
 
         String token = jwtUtil.generateToken(user);
         System.out.println("Generated Token: " + token);
