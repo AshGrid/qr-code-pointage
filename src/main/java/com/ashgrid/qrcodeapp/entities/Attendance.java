@@ -1,7 +1,8 @@
 package com.ashgrid.qrcodeapp.entities;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.*;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,13 +22,15 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String qrData;
+    @ManyToOne
+    @JoinColumn(name = "qr_data_id", nullable = false)  // Every attendance links to ONE QrData
+    private QrData qrData;
+
     @Column(nullable = false)
     private LocalDateTime scannedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonBackReference
+    @JsonIgnore
     private User user;
 }

@@ -34,10 +34,10 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // Public endpoints
-                        .requestMatchers(HttpMethod.GET, "/api/tasks/**").hasAnyRole("SIMPLE_USER", "ADMIN", "SUPER_ADMIN") // SIMPLE_USER can only GET tasks
-                        .requestMatchers(HttpMethod.POST, "/api/tasks/**").hasAnyRole("ADMIN", "SUPER_ADMIN") // Only ADMIN or SUPER_ADMIN can add tasks
-                        .requestMatchers(HttpMethod.PUT, "/api/tasks/**").hasAnyRole("SIMPLE_USER","ADMIN", "SUPER_ADMIN") // Only ADMIN or SUPER_ADMIN can update tasks
-                        .requestMatchers(HttpMethod.DELETE, "/api/tasks/**").hasRole("SUPER_ADMIN") // Only SUPER_ADMIN can delete tasks
+                        .requestMatchers("/user/users/{userId}/role").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/attendance/getAll").hasRole("SUPER_ADMIN")
+                        .requestMatchers("/api/attendance/scan").hasAnyRole("SUPER_ADMIN", "ADMIN","SIMPLE_USER")
+                        .requestMatchers("/qr-data/**").hasAnyRole("SUPER_ADMIN", "ADMIN")
                         .anyRequest().authenticated() // Any other request requires authentication
                 )
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
